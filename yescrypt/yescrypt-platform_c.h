@@ -18,8 +18,8 @@
  * SUCH DAMAGE.
  */
 
-#include <sys/mman.h>
-#include "yescrypt.h"
+//#include <sys/mman.h>
+
 #define HUGEPAGE_THRESHOLD		(12 * 1024 * 1024)
 
 #ifdef __x86_64__
@@ -108,7 +108,7 @@ free_region(yescrypt_region_t * region)
 	return 0;
 }
 
-int
+static int
 yescrypt_init_shared(yescrypt_shared_t * shared,
     const uint8_t * param, size_t paramlen,
     uint64_t N, uint32_t r, uint32_t p,
@@ -171,20 +171,20 @@ out:
 	return -1;
 }
 
-int
+static int
 yescrypt_free_shared(yescrypt_shared_t * shared)
 {
 	return free_region(&shared->shared1);
 }
 
-int
+static int
 yescrypt_init_local(yescrypt_local_t * local)
 {
 	init_region(local);
 	return 0;
 }
 
-int
+static int
 yescrypt_free_local(yescrypt_local_t * local)
 {
 	return free_region(local);

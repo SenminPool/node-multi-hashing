@@ -33,40 +33,14 @@
 #include <stdint.h>
 #include <stdlib.h> /* for size_t */
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-
-void yescrypt_hash_sp(const char *input, char *output);
-void yescrypt_hash(const char *input, char *output);
-
-
-
-/**
- * crypto_scrypt(passwd, passwdlen, salt, saltlen, N, r, p, buf, buflen):
- * Compute scrypt(passwd[0 .. passwdlen - 1], salt[0 .. saltlen - 1], N, r,
- * p, buflen) and write the result into buf.  The parameters r, p, and buflen
- * must satisfy r * p < 2^30 and buflen <= (2^32 - 1) * 32.  The parameter N
- * must be a power of 2 greater than 1.
- *
- * Return 0 on success; or -1 on error.
- *
- * MT-safe as long as buf is local to the thread.
- */
-extern int crypto_scrypt(const uint8_t * __passwd, size_t __passwdlen,
-    const uint8_t * __salt, size_t __saltlen,
-    uint64_t __N, uint32_t __r, uint32_t __p,
-    uint8_t * __buf, size_t __buflen);
-
 /**
  * Internal type used by the memory allocator.  Please do not use it directly.
  * Use yescrypt_shared_t and yescrypt_local_t as appropriate instead, since
  * they might differ from each other in a future version.
  */
 typedef struct {
-    void * base, * aligned;
-    size_t base_size, aligned_size;
+	void * base, * aligned;
+	size_t base_size, aligned_size;
 } yescrypt_region_t;
 
 /**
@@ -74,8 +48,8 @@ typedef struct {
  */
 typedef yescrypt_region_t yescrypt_shared1_t;
 typedef struct {
-    yescrypt_shared1_t shared1;
-    uint32_t mask1;
+	yescrypt_shared1_t shared1;
+	uint32_t mask1;
 } yescrypt_shared_t;
 typedef yescrypt_region_t yescrypt_local_t;
 
@@ -83,8 +57,8 @@ typedef yescrypt_region_t yescrypt_local_t;
  * Possible values for yescrypt_init_shared()'s flags argument.
  */
 typedef enum {
-    YESCRYPT_SHARED_DEFAULTS = 0,
-    YESCRYPT_SHARED_PREALLOCATED = 0x100
+	YESCRYPT_SHARED_DEFAULTS = 0,
+	YESCRYPT_SHARED_PREALLOCATED = 0x100
 } yescrypt_init_shared_flags_t;
 
 /**
@@ -96,19 +70,19 @@ typedef enum {
  */
 typedef enum {
 /* public */
-    YESCRYPT_WORM = 0,
-    YESCRYPT_RW = 1,
-    YESCRYPT_PARALLEL_SMIX = 2,
-    YESCRYPT_PWXFORM = 4,
+	YESCRYPT_WORM = 0,
+	YESCRYPT_RW = 1,
+	YESCRYPT_PARALLEL_SMIX = 2,
+	YESCRYPT_PWXFORM = 4,
 /* private */
-    __YESCRYPT_INIT_SHARED_1 = 0x10000,
-    __YESCRYPT_INIT_SHARED_2 = 0x20000,
-    __YESCRYPT_INIT_SHARED = 0x30000
+	__YESCRYPT_INIT_SHARED_1 = 0x10000,
+	__YESCRYPT_INIT_SHARED_2 = 0x20000,
+	__YESCRYPT_INIT_SHARED = 0x30000
 } yescrypt_flags_t;
 
 #define YESCRYPT_KNOWN_FLAGS \
-    (YESCRYPT_RW | YESCRYPT_PARALLEL_SMIX | YESCRYPT_PWXFORM | \
-    __YESCRYPT_INIT_SHARED)
+	(YESCRYPT_RW | YESCRYPT_PARALLEL_SMIX | YESCRYPT_PWXFORM | \
+	__YESCRYPT_INIT_SHARED)
 
 /**
  * yescrypt_init_shared(shared, param, paramlen, N, r, p, flags, mask,
@@ -136,17 +110,17 @@ typedef enum {
  * used e.g. when the ROM is memory-mapped from a disk file.  Recommended mask
  * values are powers of 2 minus 1 or minus 2.  Here's the effect of some mask
  * values:
- * mask value   ROM accesses in SMix 1st loop   ROM accesses in SMix 2nd loop
- *  0       0               1/2
- *  1       1/2             1/2
- *  2       0               1/4
- *  3       1/4             1/4
- *  6       0               1/8
- *  7       1/8             1/8
- *  14      0               1/16
- *  15      1/16                1/16
- *  1022        0               1/1024
- *  1023        1/1024              1/1024
+ * mask	value	ROM accesses in SMix 1st loop	ROM accesses in SMix 2nd loop
+ *	0		0				1/2
+ *	1		1/2				1/2
+ *	2		0				1/4
+ *	3		1/4				1/4
+ *	6		0				1/8
+ *	7		1/8				1/8
+ *	14		0				1/16
+ *	15		1/16				1/16
+ *	1022		0				1/1024
+ *	1023		1/1024				1/1024
  *
  * Actual computation of the ROM contents may be avoided, if you don't intend
  * to use a ROM but need a dummy shared structure, by calling this function
@@ -155,7 +129,7 @@ typedef enum {
  *
  * MT-safe as long as shared is local to the thread.
  */
-extern int yescrypt_init_shared(yescrypt_shared_t * __shared,
+static int yescrypt_init_shared(yescrypt_shared_t * __shared,
     const uint8_t * __param, size_t __paramlen,
     uint64_t __N, uint32_t __r, uint32_t __p,
     yescrypt_init_shared_flags_t __flags, uint32_t __mask,
@@ -169,7 +143,7 @@ extern int yescrypt_init_shared(yescrypt_shared_t * __shared,
  *
  * MT-safe as long as shared is local to the thread.
  */
-extern int yescrypt_free_shared(yescrypt_shared_t * __shared);
+static int yescrypt_free_shared(yescrypt_shared_t * __shared);
 
 /**
  * yescrypt_init_local(local):
@@ -180,7 +154,7 @@ extern int yescrypt_free_shared(yescrypt_shared_t * __shared);
  *
  * MT-safe as long as local is local to the thread.
  */
-extern int yescrypt_init_local(yescrypt_local_t * __local);
+static int yescrypt_init_local(yescrypt_local_t * __local);
 
 /**
  * yescrypt_free_local(local):
@@ -191,7 +165,7 @@ extern int yescrypt_init_local(yescrypt_local_t * __local);
  *
  * MT-safe as long as local is local to the thread.
  */
-extern int yescrypt_free_local(yescrypt_local_t * __local);
+static int yescrypt_free_local(yescrypt_local_t * __local);
 
 /**
  * yescrypt_kdf(shared, local, passwd, passwdlen, salt, saltlen,
@@ -289,87 +263,12 @@ extern int yescrypt_free_local(yescrypt_local_t * __local);
  *
  * MT-safe as long as local and buf are local to the thread.
  */
-extern int yescrypt_kdf(const yescrypt_shared_t * __shared,
+static int yescrypt_kdf(const yescrypt_shared_t * __shared,
     yescrypt_local_t * __local,
     const uint8_t * __passwd, size_t __passwdlen,
     const uint8_t * __salt, size_t __saltlen,
     uint64_t __N, uint32_t __r, uint32_t __p, uint32_t __t,
     yescrypt_flags_t __flags,
     uint8_t * __buf, size_t __buflen);
-
-/**
- * yescrypt_r(shared, local, passwd, passwdlen, setting, buf, buflen):
- * Compute and encode an scrypt or enhanced scrypt hash of passwd given the
- * parameters and salt value encoded in setting.  If the shared structure is
- * not dummy, a ROM is used and YESCRYPT_RW is required.  Otherwise, whether to
- * use the YESCRYPT_WORM (classic scrypt) or YESCRYPT_RW (time-memory tradeoff
- * discouraging modification) is determined by the setting string.  shared and
- * local must be initialized as described above for yescrypt_kdf().  buf must
- * be large enough (as indicated by buflen) to hold the encoded hash string.
- *
- * Return the encoded hash string on success; or NULL on error.
- *
- * MT-safe as long as local and buf are local to the thread.
- */
-extern uint8_t * yescrypt_r(const yescrypt_shared_t * __shared,
-    yescrypt_local_t * __local,
-    const uint8_t * __passwd, size_t __passwdlen,
-    const uint8_t * __setting,
-    uint8_t * __buf, size_t __buflen);
-
-/**
- * yescrypt(passwd, setting):
- * Compute and encode an scrypt or enhanced scrypt hash of passwd given the
- * parameters and salt value encoded in setting.  Whether to use the
- * YESCRYPT_WORM (classic scrypt) or YESCRYPT_RW (time-memory tradeoff
- * discouraging modification) is determined by the setting string.
- *
- * Return the encoded hash string on success; or NULL on error.
- *
- * This is a crypt(3)-like interface, which is simpler to use than
- * yescrypt_r(), but it is not MT-safe, it does not allow for the use of a ROM,
- * and it is slower than yescrypt_r() for repeated calls because it allocates
- * and frees memory on each call.
- *
- * MT-unsafe.
- */
-extern uint8_t * yescrypt(const uint8_t * __passwd, const uint8_t * __setting);
-
-/**
- * yescrypt_gensalt_r(N_log2, r, p, flags, src, srclen, buf, buflen):
- * Generate a setting string for use with yescrypt_r() and yescrypt() by
- * encoding into it the parameters N_log2 (which is to be set to base 2
- * logarithm of the desired value for N), r, p, flags, and a salt given by src
- * (of srclen bytes).  buf must be large enough (as indicated by buflen) to
- * hold the setting string.
- *
- * Return the setting string on success; or NULL on error.
- *
- * MT-safe as long as buf is local to the thread.
- */
-extern uint8_t * yescrypt_gensalt_r(
-    uint32_t __N_log2, uint32_t __r, uint32_t __p,
-    yescrypt_flags_t __flags,
-    const uint8_t * __src, size_t __srclen,
-    uint8_t * __buf, size_t __buflen);
-
-/**
- * yescrypt_gensalt(N_log2, r, p, flags, src, srclen):
- * Generate a setting string for use with yescrypt_r() and yescrypt().  This
- * function is the same as yescrypt_gensalt_r() except that it uses a static
- * buffer and thus is not MT-safe.
- *
- * Return the setting string on success; or NULL on error.
- *
- * MT-unsafe.
- */
-extern uint8_t * yescrypt_gensalt(
-    uint32_t __N_log2, uint32_t __r, uint32_t __p,
-    yescrypt_flags_t __flags,
-    const uint8_t * __src, size_t __srclen);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* !_YESCRYPT_H_ */

@@ -47,12 +47,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "sha256_Y.h"
+#include "sha256.h"
 #include "sysendian.h"
 
 #include "yescrypt.h"
 
-#include "yescrypt-platform.c"
+#include "yescrypt-platform_c.h"
 
 #if __STDC_VERSION__ >= 199901L
 /* have restrict */
@@ -1144,7 +1144,7 @@ smix(uint8_t * B, size_t r, uint32_t N, uint32_t p, uint32_t t,
  *
  * Return 0 on success; or -1 on error.
  */
-int
+static int
 yescrypt_kdf(const yescrypt_shared_t * shared, yescrypt_local_t * local,
     const uint8_t * passwd, size_t passwdlen,
     const uint8_t * salt, size_t saltlen,
@@ -1301,10 +1301,10 @@ yescrypt_kdf(const yescrypt_shared_t * shared, yescrypt_local_t * local,
 		S = (uint8_t *)XY + XY_size;
 
 	if (t || flags) {
-		SHA256_CTX_Y ctx;
-		SHA256_Init_Y(&ctx);
-		SHA256_Update_Y(&ctx, passwd, passwdlen);
-		SHA256_Final_Y(sha256, &ctx);
+		SHA256_CTX ctx;
+		SHA256_Init(&ctx);
+		SHA256_Update(&ctx, passwd, passwdlen);
+		SHA256_Final(sha256, &ctx);
 		passwd = sha256;
 		passwdlen = sizeof(sha256);
 	}
@@ -1352,23 +1352,17 @@ yescrypt_kdf(const yescrypt_shared_t * shared, yescrypt_local_t * local,
 	if ((t || flags) && buflen == sizeof(sha256)) {
 		/* Compute ClientKey */
 		{
-			HMAC_SHA256_CTX_Y ctx;
-			HMAC_SHA256_Init_Y(&ctx, buf, buflen);
-#if 0
-/* Proper yescrypt */
- 			HMAC_SHA256_Update_Y(&ctx, "Client Key", 10);
-#else
-/* GlobalBoost-Y buggy yescrypt */
-			HMAC_SHA256_Update_Y(&ctx, salt, saltlen);
-#endif			
-			HMAC_SHA256_Final_Y(sha256, &ctx);
+			HMAC_SHA256_CTX ctx;
+			HMAC_SHA256_Init(&ctx, buf, buflen);
+			HMAC_SHA256_Update(&ctx, "Client Key", 10);
+			HMAC_SHA256_Final(sha256, &ctx);
 		}
 		/* Compute StoredKey */
 		{
-			SHA256_CTX_Y ctx;
-			SHA256_Init_Y(&ctx);
-			SHA256_Update_Y(&ctx, sha256, sizeof(sha256));
-			SHA256_Final_Y(buf, &ctx);
+			SHA256_CTX ctx;
+			SHA256_Init(&ctx);
+			SHA256_Update(&ctx, sha256, sizeof(sha256));
+			SHA256_Final(buf, &ctx);
 		}
 	}
 
