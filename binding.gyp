@@ -6,6 +6,9 @@
                 "multihashing.cc",
                 "scryptjane.c",
                 "scryptn.c",
+                "yescrypt/sha256_Y.c",
+                "yescrypt/yescrypt-best.c",
+                "yescrypt/yescryptcommon.c",
                 "keccak.c",
                 "skein.c",
                 "x11.c",
@@ -19,11 +22,17 @@
                 "shavite3.c",
                 "cryptonight.c",
                 "x13.c",
+                "x14.c",
                 "boolberry.cc",
                 "nist5.c",
                 "sha1.c",
                 "x15.c",
                 "fresh.c",
+                "s3.c",
+                "neoscrypt.c",
+                "dcrypt.c",
+                "jh.c",
+                "c11.c",
                 "sha3/sph_hefty1.c",
                 "sha3/sph_fugue.c",
                 "sha3/aes_helper.c",
@@ -50,13 +59,24 @@
                 "crypto/hash.c",
                 "crypto/aesb.c",
                 "crypto/wild_keccak.cpp",
+                "primesr.cpp",
             ],
             "include_dirs": [
                 "crypto",
+                "<!(node -e \"require('nan')\")",
+            ],
+            "cflags": [
+                "-D_GNU_SOURCE -maes -fPIC -Ofast -flto -fuse-linker-plugin -funroll-loops -funswitch-loops -fpeel-loops"
+            ],
+            "cflags!": [ 
+                "-O2", "-fno-strict-aliasing", "-fno-tree-vrp", "-fno-omit-frame-pointer"
+            ],
+            "ldflags": [
+                "-fPIC -Ofast -flto -fuse-linker-plugin"
             ],
             "cflags_cc": [
-                "-std=c++0x"
-            ],
+                "-std=c++0x -maes -march=native -fexceptions"
+            ]
         }
     ]
 }
