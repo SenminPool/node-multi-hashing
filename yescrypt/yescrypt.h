@@ -271,4 +271,9 @@ static int yescrypt_kdf(const yescrypt_shared_t * __shared,
     yescrypt_flags_t __flags,
     uint8_t * __buf, size_t __buflen);
 
+/**
+ * Interface
+ */
+void yescrypt_hash(const char *input, char *output);
+
 #endif /* !_YESCRYPT_H_ */
