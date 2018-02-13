@@ -470,14 +470,18 @@ NAN_METHOD(shavite3) {
 
 NAN_METHOD(cryptonight) {
     bool fast = false;
+    uint32_t cn_variant = 0;
 
-    if (info.Length() < 1)
-        return THROW_ERROR_EXCEPTION("You must provide one argument.");
-
-    if (info.Length() >= 2) {
-        if(!info[1]->IsBoolean())
-            return THROW_ERROR_EXCEPTION("Argument 2 should be a boolean");
-        fast = info[1]->ToBoolean()->BooleanValue();
+    if (args.Length() < 1)
+        return except("You must provide one argument.");
+    
+    if (args.Length() >= 2) {
+        if(args[1]->IsBoolean())
+            fast = args[1]->ToBoolean()->BooleanValue();
+	else if(args[1]->IsUint32())
+            cn_variant = args[1]->ToUint32()->Uint32Value();
+	else
+            return except("Argument 2 should be a boolean or uint32_t");
     }
 
     Local<Object> target = info[0]->ToObject();
@@ -493,7 +497,7 @@ NAN_METHOD(cryptonight) {
     if(fast)
         cryptonight_fast_hash(input, output, input_len);
     else
-        cryptonight_hash(input, output, input_len);
+        cryptonight_hash(input, output, input_len, cn_variant);
 
     v8::Local<v8::Value> returnValue = Nan::CopyBuffer(output, 32).ToLocalChecked();
     info.GetReturnValue().Set(returnValue);
